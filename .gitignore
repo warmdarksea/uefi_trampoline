@@ -1,0 +1,7 @@
+/build/
+/target/
+/result
+*.efi
+*.img
+*.iso
+*.har

@@ -1,0 +1,5 @@
+# Build for the firmware target by default so `cargo build` in this crate
+# produces target/x86_64-unknown-uefi/<profile>/trampoline.efi.
+# The UEFI target's std comes from the fenix toolchain (see default.nix / flake.nix).
+[build]
+target = "x86_64-unknown-uefi"

@@ -1,0 +1,25 @@
+[package]
+name = "trampoline"
+version = "0.1.0"
+edition = "2021"
+description = "Tiny UEFI app that sets BootNext to a baked Boot#### id and reboots"
+license = "MIT"
+
+[[bin]]
+name = "trampoline"
+path = "src/main.rs"
+
+[dependencies]
+uefi = { version = "0.40", features = ["global_allocator", "logger", "panic_handler"] }
+log = "0.4"
+
+[features]
+default = []
+# When enabled, the app sets BootNext then halts (prints to console) instead of
+# resetting, so the variable can be inspected under QEMU/OVMF. Used by `make qemu-test`.
+no-reset = []
+
+[profile.release]
+opt-level = "s"
+lto = true
+panic = "abort"
