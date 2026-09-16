@@ -1,5 +1,7 @@
 # uefi_trampoline
 
+🚨🤖 AI slopware alert, LLM-generated code/prose follow. sorry...! i'll hopefully rewrite at least the prose at some point. the program seems to work fine though. but i thought i should mention it.
+
 A tiny UEFI application that, when booted, sets the firmware's one-shot `BootNext`
 variable to a specific `Boot####` id and warm-resets — so the machine lands on a
 chosen OS with no keystrokes or BIOS-menu automation. The target id is **baked at
