@@ -111,8 +111,8 @@ Watch the NanoKVM video console on the first run to confirm you see the trampoli
 
 ## Notes
 
-- The ISO is ~100 MB because the embedded ESP is a 48 MB FAT image included both in
-  the tree and as the appended partition. Trampolines are static (build/upload once
-  per OS); shrink the ESP in the Makefile if you care.
+- The ISO is a few MB: the ESP is a small FAT16 image (default 4 MB, `ESP_MB`),
+  wrapped as ISO9660 + an appended GPT/ESP. Trampolines are static (build/upload once
+  per OS). Bump `ESP_MB` if a firmware refuses the small/FAT16 image.
 - If a firmware ignores `BootNext` on a *warm* reset, switch `ResetType::WARM` to
   `COLD` in `src/main.rs`.

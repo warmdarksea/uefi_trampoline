@@ -15,6 +15,9 @@
 OS       ?= nixos
 # target Boot#### id in hex, from `efibootmgr`
 BOOTNEXT ?= 0000
+# ESP image size (MB). Small FAT16 (mformat -c 1) keeps the hybrid ISO tiny;
+# UEFI allows FAT12/16/32 on removable-media ESPs. Bump if a firmware is picky.
+ESP_MB   ?= 4
 
 # Secure Boot signing (optional, for lanzaboote/sbctl setups). `make image` signs
 # the trampoline so it boots with Secure Boot on. Two ways:
@@ -63,8 +66,8 @@ trampoline-debug: | $(BUILD)
 # mtools builds the FAT filesystem without needing root or loop mounts.
 image: trampoline
 > rm -f $(IMG)
-> dd if=/dev/zero of=$(IMG) bs=1M count=48 status=none
-> mformat -i $(IMG) -F ::
+> dd if=/dev/zero of=$(IMG) bs=1M count=$(ESP_MB) status=none
+> mformat -c 1 -i $(IMG) ::
 > mmd -i $(IMG) ::/EFI ::/EFI/BOOT
 > if [ "$(SIGN)" = "sbctl" ]; then \
 >   echo "signing $(EFI) with sbctl (auto-locating enrolled db key)"; \
@@ -83,8 +86,8 @@ image: trampoline
 
 image-debug: trampoline-debug
 > rm -f $(DEBUG_IMG)
-> dd if=/dev/zero of=$(DEBUG_IMG) bs=1M count=48 status=none
-> mformat -i $(DEBUG_IMG) -F ::
+> dd if=/dev/zero of=$(DEBUG_IMG) bs=1M count=$(ESP_MB) status=none
+> mformat -c 1 -i $(DEBUG_IMG) ::
 > mmd -i $(DEBUG_IMG) ::/EFI ::/EFI/BOOT
 > mcopy -i $(DEBUG_IMG) $(DEBUG_EFI) ::/EFI/BOOT/BOOTX64.EFI
 > @echo "assembled $(DEBUG_IMG)"
