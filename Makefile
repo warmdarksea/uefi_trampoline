@@ -69,15 +69,21 @@ image: trampoline
 > dd if=/dev/zero of=$(IMG) bs=1M count=$(ESP_MB) status=none
 > mformat -c 1 -i $(IMG) ::
 > mmd -i $(IMG) ::/EFI ::/EFI/BOOT
+> @rm -f $(SIGNED_EFI)
+> set -e; \
 > if [ "$(SIGN)" = "sbctl" ]; then \
 >   echo "signing $(EFI) with sbctl (auto-locating enrolled db key)"; \
 >   sbctl sign -o $(SIGNED_EFI) $(EFI); \
+>   sbctl verify $(SIGNED_EFI) || { echo "ERROR: sbctl could not verify $(SIGNED_EFI)"; exit 1; }; \
 >   mcopy -i $(IMG) $(SIGNED_EFI) ::/EFI/BOOT/BOOTX64.EFI; \
 > elif [ -n "$(SIGN_KEY)" ]; then \
+>   test -n "$(SIGN_CERT)" || { echo "ERROR: SIGN_KEY given without SIGN_CERT"; exit 1; }; \
 >   echo "signing $(EFI) with $(SIGN_KEY)"; \
 >   sbsign --key "$(SIGN_KEY)" --cert "$(SIGN_CERT)" --output $(SIGNED_EFI) $(EFI); \
 >   sbverify --cert "$(SIGN_CERT)" $(SIGNED_EFI); \
 >   mcopy -i $(IMG) $(SIGNED_EFI) ::/EFI/BOOT/BOOTX64.EFI; \
+> elif [ -n "$(SIGN_CERT)" ]; then \
+>   echo "ERROR: SIGN_CERT given without SIGN_KEY"; exit 1; \
 > else \
 >   echo "NOTE: unsigned image (set SIGN=sbctl or SIGN_KEY/SIGN_CERT for Secure Boot)"; \
 >   mcopy -i $(IMG) $(EFI) ::/EFI/BOOT/BOOTX64.EFI; \
